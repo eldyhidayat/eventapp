@@ -5,6 +5,8 @@ import (
 	"eventapp/delivery/middlewares"
 	"eventapp/entities/graph/model"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthRepository struct {
@@ -20,11 +22,10 @@ func (r *AuthRepository) Login(email string, password string) (model.User, strin
 	var authToken string
 	var user model.User
 
-	res, err := r.db.Query("select id,name,email,password from users where email = ? and password = ? and deleted_at is null", email, password)
+	res, err := r.db.Query("select id,name,email,password from users where email = ? and deleted_at is null", email)
 	if err != nil {
 		return user, authToken, fmt.Errorf("query sql salah")
 	}
-	fmt.Println(res)
 	// defer res.Close()
 	for res.Next() {
 		err := res.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
@@ -34,10 +35,15 @@ func (r *AuthRepository) Login(email string, password string) (model.User, strin
 	}
 
 	//bandingin hash password
+	errMatch := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
-	if user.Email != email && user.Password != password {
-		return user, "", fmt.Errorf("user tidak ditemukan")
+	if errMatch != nil {
+		return user, "", fmt.Errorf("email atau password salah")
 	}
+
+	// if user.Email != email && user.Password != password {
+	// 	return user, "", fmt.Errorf("user tidak ditemukan")
+	// }
 
 	authToken, err = middlewares.CreateToken((int(*user.ID)))
 	if err != nil {

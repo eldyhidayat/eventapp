@@ -10,13 +10,19 @@ import (
 	"eventapp/entities/graph/model"
 	"eventapp/utils/graph/generated"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	// passwordHash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+	hashedPassword, errEncrypt := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if errEncrypt != nil {
+		return nil, errors.New("failed encrypt password")
+	}
 	userData := model.User{
 		Name:     input.Name,
-		Password: input.Password,
+		Password: string(hashedPassword),
 		// Password: string(passwordHash),
 		Email:       input.Email,
 		PhoneNumber: input.PhoneNumber,
@@ -27,9 +33,8 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		return nil, errors.New("failed Create User")
 	}
 	responseMessage := model.User{
-		Name:  res.Name,
-		Email: res.Email,
-		// Password: res.Password,
+		Name:        res.Name,
+		Email:       res.Email,
 		PhoneNumber: res.PhoneNumber,
 		Avatar:      res.Avatar,
 	}
