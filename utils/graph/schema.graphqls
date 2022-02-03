@@ -7,7 +7,6 @@ type User {
 	name: String!
 	email: String!
 	password: String!
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
@@ -48,7 +47,6 @@ input NewUser {
 	name: String!
 	email: String!
 	password: String!
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
@@ -57,7 +55,6 @@ input UpdateUser {
 	name: String
 	email: String
 	password: String
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
