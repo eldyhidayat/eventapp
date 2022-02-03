@@ -60,7 +60,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if set.Name != nil {
 		user.Name = *set.Name
 	}
-	fmt.Println("ga masuk")
 
 	if set.Email != nil {
 		user.Email = *set.Email
