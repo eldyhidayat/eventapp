@@ -43,13 +43,15 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.UpdateUser) (*model.User, error) {
 	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
 	if dataLogin == nil {
 		return nil, errors.New("unauthorized")
 	} else {
-		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
 		fmt.Println("id user", convData.Id)
 	}
-	if id != dataLogin.(int) {
+
+	if id != convData.Id {
 		return nil, errors.New("unauthorized")
 	}
 	user, err := r.userRepo.GetbyId(id)
@@ -71,7 +73,11 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	}
 
 	if set.Password != nil {
-		user.Password = *set.Password
+		hashedPassword, errEncrypt := bcrypt.GenerateFromPassword([]byte(*set.Password), bcrypt.DefaultCost)
+		if errEncrypt != nil {
+			return nil, errors.New("failed encrypt password")
+		}
+		user.Password = string(hashedPassword)
 	}
 	if set.PhoneNumber != nil {
 		user.PhoneNumber = set.PhoneNumber
@@ -79,9 +85,9 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if set.Avatar != nil {
 		user.Avatar = set.Avatar
 	}
-	fmt.Println(user)
 	res, errr := r.userRepo.Update(id, user)
 	if errr != nil {
+		fmt.Println("err update", errr)
 		return nil, errors.New("fail create")
 	}
 	responseMessage := model.User{

@@ -89,7 +89,7 @@ func (r *UserRepository) Create(user model.User) (model.User, error) {
 }
 
 func (r *UserRepository) Update(id int, user model.User) (model.User, error) {
-	stmt, err := r.db.Prepare("UPDATE users SET name= ?, email= ?, password= ?, organization= ?, phone= ?, avatar= ? WHERE id = ?")
+	stmt, err := r.db.Prepare("UPDATE users SET name= ?, email= ?, password= ?, phone= ?, avatar= ? WHERE id = ?")
 	if err != nil {
 		// log.Fatal(err)
 		return user, fmt.Errorf("gagal prepare update")
