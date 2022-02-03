@@ -37,12 +37,11 @@ type NewEvent struct {
 }
 
 type NewUser struct {
-	Name         string  `json:"name"`
-	Email        string  `json:"email"`
-	Password     string  `json:"password"`
-	Organization *string `json:"organization"`
-	PhoneNumber  *string `json:"phoneNumber"`
-	Avatar       *string `json:"avatar"`
+	Name        string  `json:"name"`
+	Email       string  `json:"email"`
+	Password    string  `json:"password"`
+	PhoneNumber *string `json:"phoneNumber"`
+	Avatar      *string `json:"avatar"`
 }
 
 type UpdateEvent struct {
@@ -56,20 +55,18 @@ type UpdateEvent struct {
 }
 
 type UpdateUser struct {
-	Name         *string `json:"name"`
-	Email        *string `json:"email"`
-	Password     *string `json:"password"`
-	Organization *string `json:"organization"`
-	PhoneNumber  *string `json:"phoneNumber"`
-	Avatar       *string `json:"avatar"`
+	Name        *string `json:"name"`
+	Email       *string `json:"email"`
+	Password    *string `json:"password"`
+	PhoneNumber *string `json:"phoneNumber"`
+	Avatar      *string `json:"avatar"`
 }
 
 type User struct {
-	ID           *int    `json:"id"`
-	Name         string  `json:"name"`
-	Email        string  `json:"email"`
-	Password     string  `json:"password"`
-	Organization *string `json:"organization"`
-	PhoneNumber  *string `json:"phoneNumber"`
-	Avatar       *string `json:"avatar"`
+	ID          *int    `json:"id"`
+	Name        string  `json:"name"`
+	Email       string  `json:"email"`
+	Password    string  `json:"password"`
+	PhoneNumber *string `json:"phoneNumber"`
+	Avatar      *string `json:"avatar"`
 }

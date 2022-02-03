@@ -85,13 +85,12 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		Avatar       func(childComplexity int) int
-		Email        func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Name         func(childComplexity int) int
-		Organization func(childComplexity int) int
-		Password     func(childComplexity int) int
-		PhoneNumber  func(childComplexity int) int
+		Avatar      func(childComplexity int) int
+		Email       func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Password    func(childComplexity int) int
+		PhoneNumber func(childComplexity int) int
 	}
 }
 
@@ -381,13 +380,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Name(childComplexity), true
 
-	case "User.organization":
-		if e.complexity.User.Organization == nil {
-			break
-		}
-
-		return e.complexity.User.Organization(childComplexity), true
-
 	case "User.password":
 		if e.complexity.User.Password == nil {
 			break
@@ -475,7 +467,6 @@ type User {
 	name: String!
 	email: String!
 	password: String!
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
@@ -516,7 +507,6 @@ input NewUser {
 	name: String!
 	email: String!
 	password: String!
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
@@ -525,7 +515,6 @@ input UpdateUser {
 	name: String
 	email: String
 	password: String
-	organization: String
 	phoneNumber: String
 	avatar: String
 }
@@ -1951,38 +1940,6 @@ func (ec *executionContext) _User_password(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_organization(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Organization, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _User_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3273,14 +3230,6 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
-		case "organization":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("organization"))
-			it.Organization, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "phoneNumber":
 			var err error
 
@@ -3404,14 +3353,6 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "organization":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("organization"))
-			it.Organization, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3939,13 +3880,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "organization":
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._User_organization(ctx, field, obj)
-			}
-
-			out.Values[i] = innerFunc(ctx)
-
 		case "phoneNumber":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._User_phoneNumber(ctx, field, obj)

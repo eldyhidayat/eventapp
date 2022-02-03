@@ -18,10 +18,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		Name:     input.Name,
 		Password: input.Password,
 		// Password: string(passwordHash),
-		Email:        input.Email,
-		Organization: input.Organization,
-		PhoneNumber:  input.PhoneNumber,
-		Avatar:       input.Avatar,
+		Email:       input.Email,
+		PhoneNumber: input.PhoneNumber,
+		Avatar:      input.Avatar,
 	}
 	res, err := r.userRepo.Create(userData)
 	if err != nil {
@@ -31,9 +30,8 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		Name:  res.Name,
 		Email: res.Email,
 		// Password: res.Password,
-		Organization: res.Organization,
-		PhoneNumber:  res.PhoneNumber,
-		Avatar:       res.Avatar,
+		PhoneNumber: res.PhoneNumber,
+		Avatar:      res.Avatar,
 	}
 	return &responseMessage, nil
 }
@@ -71,9 +69,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if set.Password != nil {
 		user.Password = *set.Password
 	}
-	if set.Organization != nil {
-		user.Organization = set.Organization
-	}
 	if set.PhoneNumber != nil {
 		user.PhoneNumber = set.PhoneNumber
 	}
@@ -90,9 +85,8 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 		Name:  res.Name,
 		Email: res.Email,
 		// Password: res.Password,
-		Organization: res.Organization,
-		PhoneNumber:  res.PhoneNumber,
-		Avatar:       res.Avatar,
+		PhoneNumber: res.PhoneNumber,
+		Avatar:      res.Avatar,
 	}
 	return &responseMessage, nil
 }
@@ -160,7 +154,6 @@ func (r *queryResolver) UsersByID(ctx context.Context, id int) (*model.User, err
 	responseUserData.ID = responseData.ID
 	responseUserData.Name = responseData.Name
 	responseUserData.Password = responseData.Password
-	responseUserData.Organization = responseData.Organization
 	responseUserData.PhoneNumber = responseData.PhoneNumber
 	responseUserData.Avatar = responseData.Avatar
 
