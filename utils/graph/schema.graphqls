@@ -25,6 +25,7 @@ type Event {
 }
 input NewEvent {
 	name: String!
+	userId: Int
 	promotor: String!
 	category: String!
 	datetime: String!

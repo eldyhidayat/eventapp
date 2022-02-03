@@ -108,13 +108,47 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Messa
 		return nil, errors.New("failed Delete User")
 	}
 	responseMessage := model.Message{
-		Message: "Succes Delete User",
+		Message: "Success Delete User",
 	}
 	return &responseMessage, nil
 }
 
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	convData := ctx.Value("EchoContextKey").(*middlewares.User)
+	UserID := convData.Id
+	eventData := model.Event{
+		Name:        input.Name,
+		UserID:      UserID,
+		Promotor:    input.Promotor,
+		Category:    input.Category,
+		Datetime:    input.Datetime,
+		Location:    input.Location,
+		Description: input.Description,
+		Photo:       input.Photo,
+	}
+	res, err := r.eventRepo.Create(eventData)
+	if err != nil {
+		return nil, errors.New("failed Create Event")
+	}
+	responseMessage := model.Event{
+		Name:        res.Name,
+		UserID:      res.UserID,
+		Promotor:    res.Promotor,
+		Category:    res.Category,
+		Datetime:    res.Datetime,
+		Location:    res.Location,
+		Description: res.Description,
+		Photo:       res.Photo,
+	}
+	return &responseMessage, nil
 }
 
 func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.UpdateEvent) (*model.Event, error) {
@@ -122,7 +156,26 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.Up
 }
 
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id int) (*model.Message, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	if id != dataLogin.(int) {
+		return nil, errors.New("unauthorized")
+	}
+
+	err := r.eventRepo.Delete(id)
+	if err != nil {
+		return nil, errors.New("failed Delete Event")
+	}
+	responseMessage := model.Message{
+		Message: "Success Delete Event",
+	}
+	return &responseMessage, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {

@@ -28,6 +28,7 @@ type Message struct {
 
 type NewEvent struct {
 	Name        string `json:"name"`
+	UserID      *int   `json:"userId"`
 	Promotor    string `json:"promotor"`
 	Category    string `json:"category"`
 	Datetime    string `json:"datetime"`
