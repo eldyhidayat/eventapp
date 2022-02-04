@@ -18,6 +18,30 @@ USE `eventapp`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `category` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categories`
+--
+
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (1,'random'),(2,'gatau');
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `comments`
 --
 
@@ -34,8 +58,8 @@ CREATE TABLE `comments` (
   PRIMARY KEY (`id`),
   KEY `userid` (`userid`),
   KEY `eventid` (`eventid`),
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`),
-  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`eventid`) REFERENCES `events` (`id`)
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`eventid`) REFERENCES `events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -60,15 +84,19 @@ CREATE TABLE `events` (
   `name` varchar(255) DEFAULT NULL,
   `userid` int DEFAULT NULL,
   `promotor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `categoryid` int DEFAULT NULL,
   `date` datetime DEFAULT NULL,
   `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `photo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  KEY `fkuserevent_idx` (`userid`),
+  KEY `fkcatevent_idx` (`categoryid`),
+  CONSTRAINT `fkcatevent` FOREIGN KEY (`categoryid`) REFERENCES `categories` (`id`),
+  CONSTRAINT `fkuserevent` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,6 +105,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
+INSERT INTO `events` VALUES (1,'tidur',8,'anulah',1,'2023-03-03 22:00:00','Bojongsoang','ya gitu aja','https://www.last.fm/static/images/whatsnew/trackmymusic/windows_logo.0079fd78cebd.png','2022-02-04 00:29:24',NULL),(2,'bajak anunya',8,'anulah',1,'2022-03-03 22:00:00','Bojongsoang','ya gitu aja','https://www.last.fm/static/images/whatsnew/trackmymusic/windows_logo.0079fd78cebd.png','2022-02-04 11:01:08',NULL),(3,'bajak anunya',8,'anulah',2,'2023-03-03 22:00:00','Bojongsoang','ya gitu aja','https://www.last.fm/static/images/whatsnew/trackmymusic/windows_logo.0079fd78cebd.png','2022-02-04 11:46:34','2022-02-04 22:22:23'),(4,'mamaaaaa',10,'huuuuu',1,'2022-12-03 22:00:00','Mampang','didn\'t mean to make you cry','https://www.last.fm/static/images/whatsnew/trackmymusic/windows_logo.0079fd78cebd.png','2022-02-04 22:36:43',NULL);
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,8 +125,8 @@ CREATE TABLE `participants` (
   PRIMARY KEY (`id`),
   KEY `userid` (`userid`),
   KEY `eventid` (`eventid`),
-  CONSTRAINT `participants_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `users` (`id`),
-  CONSTRAINT `participants_ibfk_3` FOREIGN KEY (`eventid`) REFERENCES `events` (`id`)
+  CONSTRAINT `participants_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `participants_ibfk_3` FOREIGN KEY (`eventid`) REFERENCES `events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -127,7 +156,7 @@ CREATE TABLE `users` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +165,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'najib','najib@gmail.com','najib','0251','https://avatars.githubusercontent.com/u/62690560?v=4',NULL,NULL),(2,'lala','lala@land.com','lala','7474','',NULL,NULL),(6,'gtc','gtc@mail.com','123','1212','',NULL,NULL),(7,'pointer','poin@ter.com','bisadong','gagalmele','nyangkut',NULL,NULL),(8,'test','test','test','123123','ganti terahir ya',NULL,NULL),(9,'anu','anua','anu','1234','anu','2022-02-03 19:43:31',NULL);
+INSERT INTO `users` VALUES (1,'najib','najib@gmail.com','najib','0251','https://avatars.githubusercontent.com/u/62690560?v=4',NULL,NULL),(2,'lala','lala@land.com','lala','7474','',NULL,NULL),(6,'gtc','gtc@mail.com','123','1212','',NULL,NULL),(7,'pointer','poin@ter.com','bisadong','gagalmele','nyangkut',NULL,NULL),(8,'test','test','test','123123','ganti terahir ya',NULL,NULL),(9,'anu','anua','anu','1234','anu','2022-02-03 19:43:31',NULL),(10,'mama','mama@mail.com','$2a$10$5lsEzqht.W2V8fDlKaENyehy.bm7MdCsB7yqG8QSJvhlbmin8NnaS',NULL,NULL,'2022-02-04 22:34:20',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -149,4 +178,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-03 22:19:22
+-- Dump completed on 2022-02-04 22:43:36
