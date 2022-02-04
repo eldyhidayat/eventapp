@@ -10,13 +10,19 @@ import (
 	"eventapp/entities/graph/model"
 	"eventapp/utils/graph/generated"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	// passwordHash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+	hashedPassword, errEncrypt := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if errEncrypt != nil {
+		return nil, errors.New("failed encrypt password")
+	}
 	userData := model.User{
 		Name:     input.Name,
-		Password: input.Password,
+		Password: string(hashedPassword),
 		// Password: string(passwordHash),
 		Email:       input.Email,
 		PhoneNumber: input.PhoneNumber,
@@ -27,9 +33,8 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		return nil, errors.New("failed Create User")
 	}
 	responseMessage := model.User{
-		Name:  res.Name,
-		Email: res.Email,
-		// Password: res.Password,
+		Name:        res.Name,
+		Email:       res.Email,
 		PhoneNumber: res.PhoneNumber,
 		Avatar:      res.Avatar,
 	}
@@ -56,14 +61,17 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if set.Name != nil {
 		user.Name = *set.Name
 	}
-	fmt.Println("ga masuk")
 
 	if set.Email != nil {
 		user.Email = *set.Email
 	}
 
 	if set.Password != nil {
-		user.Password = *set.Password
+		hashedPassword, errEncrypt := bcrypt.GenerateFromPassword([]byte(*set.Password), bcrypt.DefaultCost)
+		if errEncrypt != nil {
+			return nil, errors.New("failed encrypt password")
+		}
+		user.Password = string(hashedPassword)
 	}
 	if set.PhoneNumber != nil {
 		user.PhoneNumber = set.PhoneNumber
@@ -71,9 +79,9 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if set.Avatar != nil {
 		user.Avatar = set.Avatar
 	}
-	fmt.Println(user)
 	res, errr := r.userRepo.Update(id, user)
 	if errr != nil {
+		fmt.Println("err update", errr)
 		return nil, errors.New("fail create")
 	}
 	responseMessage := model.User{
