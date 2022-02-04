@@ -198,18 +198,23 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.Up
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id int) (*model.Message, error) {
 	//panic(fmt.Errorf("not implemented"))
 	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
 	if dataLogin == nil {
 		return nil, errors.New("unauthorized")
 	} else {
-		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
 		fmt.Println("id user", convData.Id)
 	}
-	if id != dataLogin.(int) {
+	userid, err := r.eventRepo.GetbyId(id)
+	if err != nil {
+		return nil, errors.New("failed get event by id")
+	}
+	if userid.UserID != convData.Id {
 		return nil, errors.New("unauthorized")
 	}
 
-	err := r.eventRepo.Delete(id)
-	if err != nil {
+	errr := r.eventRepo.Delete(id)
+	if errr != nil {
 		return nil, errors.New("failed Delete Event")
 	}
 	responseMessage := model.Message{
