@@ -15,27 +15,39 @@ func New(db *sql.DB) *EventRepository {
 	return &EventRepository{db: db}
 }
 
-func (r *EventRepository) Get(categoryid *int, keyword *string, limit *int, page *int) ([]model.Event, error) {
+func (r *EventRepository) Get(categoryid *int, keyword *string, limit *int, offset *int) ([]model.Event, error) {
 	var err error
 	var result *sql.Rows
-	if keyword != nil {
+	var temp1 int
+	var temp2 int
+	var temp3 int
+	if keyword != nil && limit != nil && offset != nil {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
-join users u on e.userid = u.id	
-join categories c on e.categoryid = c.id
-where upper(e.name) like %?% and e.deleted_at is null limit ? offset ?`, keyword, limit, (*page-1)*(*limit))
-	} else if categoryid != nil {
+			join users u on e.userid = u.id	
+			join categories c on e.categoryid = c.id
+			where upper(e.name) like %?% and e.deleted_at is null limit ? offset ?`, keyword, limit, offset)
+	} else if categoryid != nil && limit != nil && offset != nil {
+		temp1 = *categoryid
+		temp2 = *limit
+		temp3 = *offset
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
-join users u on e.userid = u.id	
-join categories c on e.categoryid = c.id
-where e.categoryid = ? and e.deleted_at is null  limit ? offset ?`, categoryid, limit, (*page-1)*(*limit))
+			join users u on e.userid = u.id	
+			join categories c on e.categoryid = c.id
+			where e.categoryid = ? and e.deleted_at is null limit ? offset ?`, temp1, temp2, temp3)
+	} else if limit != nil && offset != nil {
+		result, err = r.db.Query(
+			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			join users u on e.userid = u.id	
+			join categories c on e.categoryid = c.id
+			where e.deleted_at is null  limit ? offset ?`, limit, offset)
 	} else {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
-join users u on e.userid = u.id	
-join categories c on e.categoryid = c.id
-where e.deleted_at is null  limit ? offset ?`, limit, (*page-1)*(*limit))
+			join users u on e.userid = u.id	
+			join categories c on e.categoryid = c.id
+			where e.deleted_at is null`)
 	}
 	if err != nil {
 		fmt.Println("Get 1", err)

@@ -76,7 +76,7 @@ type Query {
 	users: [User!]
 	usersByID(id: Int!): User
 	authLogin(email: String!, password: String!): LoginResponse!
-	events(categoryid: Int, keyword: String, page: Int, limit: Int): [Event!]
+	events(categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 }
 

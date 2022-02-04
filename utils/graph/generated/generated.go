@@ -79,7 +79,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AuthLogin  func(childComplexity int, email string, password string) int
-		Events     func(childComplexity int, categoryid *int, keyword *string, page *int, limit *int) int
+		Events     func(childComplexity int, categoryid *int, keyword *string, offset *int, limit *int) int
 		EventsByID func(childComplexity int, id int) int
 		Users      func(childComplexity int) int
 		UsersByID  func(childComplexity int, id int) int
@@ -107,7 +107,7 @@ type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
 	UsersByID(ctx context.Context, id int) (*model.User, error)
 	AuthLogin(ctx context.Context, email string, password string) (*model.LoginResponse, error)
-	Events(ctx context.Context, categoryid *int, keyword *string, page *int, limit *int) ([]*model.Event, error)
+	Events(ctx context.Context, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error)
 	EventsByID(ctx context.Context, id int) (*model.Event, error)
 }
 
@@ -332,7 +332,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Events(childComplexity, args["categoryid"].(*int), args["keyword"].(*string), args["page"].(*int), args["limit"].(*int)), true
+		return e.complexity.Query.Events(childComplexity, args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Query.eventsByID":
 		if e.complexity.Query.EventsByID == nil {
@@ -549,7 +549,7 @@ type Query {
 	users: [User!]
 	usersByID(id: Int!): User
 	authLogin(email: String!, password: String!): LoginResponse!
-	events(categoryid: Int, keyword: String, page: Int, limit: Int): [Event!]
+	events(categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 }
 
@@ -758,14 +758,14 @@ func (ec *executionContext) field_Query_events_args(ctx context.Context, rawArgs
 	}
 	args["keyword"] = arg1
 	var arg2 *int
-	if tmp, ok := rawArgs["page"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
 		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["page"] = arg2
+	args["offset"] = arg2
 	var arg3 *int
 	if tmp, ok := rawArgs["limit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
@@ -1781,7 +1781,7 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Events(rctx, args["categoryid"].(*int), args["keyword"].(*string), args["page"].(*int), args["limit"].(*int))
+		return ec.resolvers.Query().Events(rctx, args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

@@ -270,9 +270,9 @@ func (r *queryResolver) AuthLogin(ctx context.Context, email string, password st
 	return &response, nil
 }
 
-func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *string, page *int, limit *int) ([]*model.Event, error) {
+func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error) {
 	//panic(fmt.Errorf("not implemented"))
-	responseData, err := r.eventRepo.Get(categoryid, keyword, page, limit)
+	responseData, err := r.eventRepo.Get(categoryid, keyword, offset, limit)
 
 	if err != nil {
 		return nil, errors.New("user not found")
