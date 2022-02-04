@@ -3,16 +3,17 @@
 package model
 
 type Event struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	UserID      int     `json:"userId"`
-	Promotor    string  `json:"promotor"`
-	Category    string  `json:"category"`
-	Datetime    string  `json:"datetime"`
-	Location    string  `json:"location"`
-	Description string  `json:"description"`
-	Photo       string  `json:"photo"`
-	CreatedAt   *string `json:"createdAt"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	UserID       int    `json:"userId"`
+	UserName     string `json:"userName"`
+	Promotor     string `json:"promotor"`
+	CategoryID   int    `json:"categoryId"`
+	CategoryName string `json:"categoryName"`
+	Datetime     string `json:"datetime"`
+	Location     string `json:"location"`
+	Description  string `json:"description"`
+	Photo        string `json:"photo"`
 }
 
 type LoginResponse struct {
@@ -28,8 +29,9 @@ type Message struct {
 
 type NewEvent struct {
 	Name        string `json:"name"`
+	UserID      *int   `json:"userId"`
 	Promotor    string `json:"promotor"`
-	Category    string `json:"category"`
+	CategoryID  int    `json:"categoryId"`
 	Datetime    string `json:"datetime"`
 	Location    string `json:"location"`
 	Description string `json:"description"`
@@ -45,13 +47,13 @@ type NewUser struct {
 }
 
 type UpdateEvent struct {
-	Name        *string `json:"name"`
-	Promotor    *string `json:"promotor"`
-	Category    *string `json:"category"`
-	Datetime    *string `json:"datetime"`
-	Location    *string `json:"location"`
-	Description *string `json:"description"`
-	Photo       *string `json:"photo"`
+	Name        string `json:"name"`
+	Promotor    string `json:"promotor"`
+	CategoryID  int    `json:"categoryId"`
+	Datetime    string `json:"datetime"`
+	Location    string `json:"location"`
+	Description string `json:"description"`
+	Photo       string `json:"photo"`
 }
 
 type UpdateUser struct {

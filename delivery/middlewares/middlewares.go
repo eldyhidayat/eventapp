@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
 type User struct {
 	Id   int
 	Role string
@@ -41,6 +42,7 @@ func ExtractToken(e echo.Context) int {
 		default:
 			return id.(int)
 		}
+
 	}
 	return -1 //invalid
 }

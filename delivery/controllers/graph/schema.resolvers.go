@@ -50,7 +50,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 		convData = ctx.Value("EchoContextKey").(*middlewares.User)
 		fmt.Println("id user", convData.Id)
 	}
-
 	if id != convData.Id {
 		return nil, errors.New("unauthorized")
 	}
@@ -58,11 +57,6 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 	if err != nil {
 		return nil, errors.New("not found")
 	}
-	// user.Name = *set.Name //-----invalid memory address
-	// user.Email = *set.Email
-	// passwordHash, _ := bcrypt.GenerateFromPassword([]byte(*set.Password), bcrypt.MinCost)
-	// user.Password = string(passwordHash)
-	// user.Password = *set.Password
 
 	if set.Name != nil {
 		user.Name = *set.Name
@@ -118,21 +112,123 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Messa
 		return nil, errors.New("failed Delete User")
 	}
 	responseMessage := model.Message{
-		Message: "Succes Delete User",
+		Message: "Success Delete User",
 	}
 	return &responseMessage, nil
 }
 
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	convData := ctx.Value("EchoContextKey").(*middlewares.User)
+	UserID := convData.Id
+	eventData := model.Event{
+		Name:        input.Name,
+		UserID:      UserID,
+		Promotor:    input.Promotor,
+		CategoryID:  input.CategoryID,
+		Datetime:    input.Datetime,
+		Location:    input.Location,
+		Description: input.Description,
+		Photo:       input.Photo,
+	}
+	res, err := r.eventRepo.Create(eventData)
+	if err != nil {
+		return nil, errors.New("failed Create Event")
+	}
+	responseMessage := model.Event{
+		Name:        res.Name,
+		UserID:      res.UserID,
+		Promotor:    res.Promotor,
+		CategoryID:  res.CategoryID,
+		Datetime:    res.Datetime,
+		Location:    res.Location,
+		Description: res.Description,
+		Photo:       res.Photo,
+	}
+	return &responseMessage, nil
 }
 
 func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.UpdateEvent) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
+	if dataLogin == nil {
+		fmt.Println("1", dataLogin)
+		return nil, errors.New("unauthorized")
+	} else {
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	userid, err := r.eventRepo.GetbyId(id)
+	fmt.Println("userid", userid)
+	if userid.UserID != convData.Id {
+		fmt.Println("2", userid.UserID)
+		return nil, errors.New("unauthorized")
+	}
+	event, err := r.eventRepo.GetbyId(id)
+	if err != nil {
+		return nil, errors.New("not found")
+	}
+	event.Name = set.Name
+	event.Promotor = set.Promotor
+	event.CategoryID = set.CategoryID
+	event.Datetime = set.Datetime
+	event.Location = set.Location
+	event.Description = set.Description
+	event.Photo = set.Photo
+
+	res, errr := r.eventRepo.Update(id, event)
+	if errr != nil {
+		fmt.Println(errr)
+		return nil, errors.New("fail create")
+	}
+	responseMessage := model.Event{
+		ID:          res.ID,
+		Name:        res.Name,
+		UserID:      res.UserID,
+		Promotor:    res.Promotor,
+		CategoryID:  res.CategoryID,
+		Datetime:    res.Datetime,
+		Location:    res.Location,
+		Description: res.Description,
+		Photo:       res.Photo,
+	}
+	return &responseMessage, nil
 }
 
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id int) (*model.Message, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	userid, err := r.eventRepo.GetbyId(id)
+	if err != nil {
+		return nil, errors.New("failed get event by id")
+	}
+	if userid.UserID != convData.Id {
+		return nil, errors.New("unauthorized")
+	}
+
+	errr := r.eventRepo.Delete(id)
+	if errr != nil {
+		return nil, errors.New("failed Delete Event")
+	}
+	responseMessage := model.Message{
+		Message: "Success Delete Event",
+	}
+	return &responseMessage, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
@@ -187,12 +283,42 @@ func (r *queryResolver) AuthLogin(ctx context.Context, email string, password st
 	return &response, nil
 }
 
-func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error) {
+	//panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventRepo.Get(categoryid, keyword, offset, limit)
+
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	eventResponseData := []*model.Event{}
+
+	for _, event := range responseData {
+		//convertID := int(*event.ID)
+		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserName: event.UserName, Promotor: event.Promotor, CategoryName: event.CategoryName, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
+	}
+
+	return eventResponseData, nil
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+	//panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventRepo.GetbyId(id)
+
+	if err != nil {
+		return nil, errors.New("not found")
+	}
+	responseEventData := model.Event{}
+	responseEventData.ID = responseData.ID
+	responseEventData.Name = responseData.Name
+	responseEventData.UserName = responseData.UserName
+	responseEventData.Promotor = responseData.Promotor
+	responseEventData.CategoryName = responseData.CategoryName
+	responseEventData.Datetime = responseData.Datetime
+	responseEventData.Location = responseData.Location
+	responseEventData.Description = responseData.Description
+	responseEventData.Photo = responseData.Photo
+	return &responseEventData, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
