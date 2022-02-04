@@ -124,7 +124,7 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 		Name:        input.Name,
 		UserID:      UserID,
 		Promotor:    input.Promotor,
-		Category:    input.Category,
+		CategoryID:  input.CategoryID,
 		Datetime:    input.Datetime,
 		Location:    input.Location,
 		Description: input.Description,
@@ -138,7 +138,7 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 		Name:        res.Name,
 		UserID:      res.UserID,
 		Promotor:    res.Promotor,
-		Category:    res.Category,
+		CategoryID:  res.CategoryID,
 		Datetime:    res.Datetime,
 		Location:    res.Location,
 		Description: res.Description,
@@ -165,29 +165,14 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.Up
 	if err != nil {
 		return nil, errors.New("not found")
 	}
+	event.Name = set.Name
+	event.Promotor = set.Promotor
+	event.CategoryID = set.CategoryID
+	event.Datetime = set.Datetime
+	event.Location = set.Location
+	event.Description = set.Description
+	event.Photo = set.Photo
 
-	if set.Name != nil {
-		event.Name = *set.Name
-	}
-
-	if set.Promotor != nil {
-		event.Promotor = *set.Promotor
-	}
-	if set.Category != nil {
-		event.Category = *set.Category
-	}
-	if set.Datetime != nil {
-		event.Datetime = *set.Datetime
-	}
-	if set.Location != nil {
-		event.Location = *set.Location
-	}
-	if set.Description != nil {
-		event.Description = *set.Description
-	}
-	if set.Photo != nil {
-		event.Photo = *set.Photo
-	}
 	res, errr := r.eventRepo.Update(id, event)
 	if errr != nil {
 		fmt.Println(errr)
@@ -198,7 +183,7 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.Up
 		Name:        res.Name,
 		UserID:      res.UserID,
 		Promotor:    res.Promotor,
-		Category:    res.Category,
+		CategoryID:  res.CategoryID,
 		Datetime:    res.Datetime,
 		Location:    res.Location,
 		Description: res.Description,
@@ -282,8 +267,22 @@ func (r *queryResolver) AuthLogin(ctx context.Context, email string, password st
 	return &response, nil
 }
 
-func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *string, page *int, limit *int) ([]*model.Event, error) {
+	//panic(fmt.Errorf("not implemented"))
+	responseData, err := r.eventRepo.Get(*categoryid, *keyword, *page, *limit)
+
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	eventResponseData := []*model.Event{}
+
+	for _, event := range responseData {
+		//convertID := int(*event.ID)
+		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserID: event.UserID, Promotor: event.Promotor, CategoryID: event.CategoryID, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
+	}
+
+	return eventResponseData, nil
 }
 
 func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, error) {
@@ -298,7 +297,7 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, e
 	responseEventData.Name = responseData.Name
 	responseEventData.UserID = responseData.UserID
 	responseEventData.Promotor = responseData.Promotor
-	responseEventData.Category = responseData.Category
+	responseEventData.CategoryID = responseData.CategoryID
 	responseEventData.Datetime = responseData.Datetime
 	responseEventData.Location = responseData.Location
 	responseEventData.Description = responseData.Description

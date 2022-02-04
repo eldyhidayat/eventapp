@@ -5,7 +5,7 @@ import (
 )
 
 type Event interface {
-	Get(category string, keyword string, page int, limit int) ([]model.Event, error)
+	Get(categoryid int, keyword string, page int, limit int) ([]model.Event, error)
 	GetbyId(id int) (model.Event, error)
 	Create(model.Event) (model.Event, error)
 	Update(id int, user model.Event) (model.Event, error)

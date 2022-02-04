@@ -16,7 +16,7 @@ type Event {
 	name: String!
 	userId: Int!
 	promotor: String!
-	category: String!
+	categoryId: Int!
 	datetime: String!
 	location: String!
 	description: String!
@@ -27,7 +27,7 @@ input NewEvent {
 	name: String!
 	userId: Int
 	promotor: String!
-	category: String!
+	categoryId: Int!
 	datetime: String!
 	location: String!
 	description: String!
@@ -35,13 +35,13 @@ input NewEvent {
 }
 
 input UpdateEvent {
-	name: String
-	promotor: String
-	category: String
-	datetime: String
-	location: String
-	description: String
-	photo: String
+	name: String!
+	promotor: String!
+	categoryId: Int!
+	datetime: String!
+	location: String!
+	description: String!
+	photo: String!
 }
 
 input NewUser {
@@ -75,7 +75,7 @@ type Query {
 	users: [User!]
 	usersByID(id: Int!): User
 	authLogin(email: String!, password: String!): LoginResponse!
-	events: [Event!]
+	events(categoryid: Int, keyword: String, page: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 }
 

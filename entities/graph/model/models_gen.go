@@ -7,7 +7,7 @@ type Event struct {
 	Name        string  `json:"name"`
 	UserID      int     `json:"userId"`
 	Promotor    string  `json:"promotor"`
-	Category    string  `json:"category"`
+	CategoryID  int     `json:"categoryId"`
 	Datetime    string  `json:"datetime"`
 	Location    string  `json:"location"`
 	Description string  `json:"description"`
@@ -30,7 +30,7 @@ type NewEvent struct {
 	Name        string `json:"name"`
 	UserID      *int   `json:"userId"`
 	Promotor    string `json:"promotor"`
-	Category    string `json:"category"`
+	CategoryID  int    `json:"categoryId"`
 	Datetime    string `json:"datetime"`
 	Location    string `json:"location"`
 	Description string `json:"description"`
@@ -46,13 +46,13 @@ type NewUser struct {
 }
 
 type UpdateEvent struct {
-	Name        *string `json:"name"`
-	Promotor    *string `json:"promotor"`
-	Category    *string `json:"category"`
-	Datetime    *string `json:"datetime"`
-	Location    *string `json:"location"`
-	Description *string `json:"description"`
-	Photo       *string `json:"photo"`
+	Name        string `json:"name"`
+	Promotor    string `json:"promotor"`
+	CategoryID  int    `json:"categoryId"`
+	Datetime    string `json:"datetime"`
+	Location    string `json:"location"`
+	Description string `json:"description"`
+	Photo       string `json:"photo"`
 }
 
 type UpdateUser struct {
