@@ -15,13 +15,14 @@ type Event {
 	id: Int!
 	name: String!
 	userId: Int!
+	userName: String!
 	promotor: String!
 	categoryId: Int!
+	categoryName: String!
 	datetime: String!
 	location: String!
 	description: String!
 	photo: String!
-	createdAt: String
 }
 input NewEvent {
 	name: String!

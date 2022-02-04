@@ -152,13 +152,16 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id int, set model.Up
 	dataLogin := ctx.Value("EchoContextKey") // auth jwt
 	var convData *middlewares.User
 	if dataLogin == nil {
+		fmt.Println("1", dataLogin)
 		return nil, errors.New("unauthorized")
 	} else {
 		convData = ctx.Value("EchoContextKey").(*middlewares.User)
 		fmt.Println("id user", convData.Id)
 	}
 	userid, err := r.eventRepo.GetbyId(id)
+	fmt.Println("userid", userid)
 	if userid.UserID != convData.Id {
+		fmt.Println("2", userid.UserID)
 		return nil, errors.New("unauthorized")
 	}
 	event, err := r.eventRepo.GetbyId(id)
@@ -269,7 +272,7 @@ func (r *queryResolver) AuthLogin(ctx context.Context, email string, password st
 
 func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *string, page *int, limit *int) ([]*model.Event, error) {
 	//panic(fmt.Errorf("not implemented"))
-	responseData, err := r.eventRepo.Get(*categoryid, *keyword, *page, *limit)
+	responseData, err := r.eventRepo.Get(categoryid, keyword, page, limit)
 
 	if err != nil {
 		return nil, errors.New("user not found")
@@ -279,7 +282,7 @@ func (r *queryResolver) Events(ctx context.Context, categoryid *int, keyword *st
 
 	for _, event := range responseData {
 		//convertID := int(*event.ID)
-		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserID: event.UserID, Promotor: event.Promotor, CategoryID: event.CategoryID, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
+		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserName: event.UserName, Promotor: event.Promotor, CategoryName: event.CategoryName, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
 	}
 
 	return eventResponseData, nil
@@ -295,9 +298,9 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, e
 	responseEventData := model.Event{}
 	responseEventData.ID = responseData.ID
 	responseEventData.Name = responseData.Name
-	responseEventData.UserID = responseData.UserID
+	responseEventData.UserName = responseData.UserName
 	responseEventData.Promotor = responseData.Promotor
-	responseEventData.CategoryID = responseData.CategoryID
+	responseEventData.CategoryName = responseData.CategoryName
 	responseEventData.Datetime = responseData.Datetime
 	responseEventData.Location = responseData.Location
 	responseEventData.Description = responseData.Description

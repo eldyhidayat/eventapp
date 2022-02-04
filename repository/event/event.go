@@ -15,35 +15,36 @@ func New(db *sql.DB) *EventRepository {
 	return &EventRepository{db: db}
 }
 
-func (r *EventRepository) Get(categoryid int, keyword string, limit int, page int) ([]model.Event, error) {
+func (r *EventRepository) Get(categoryid *int, keyword *string, limit *int, page *int) ([]model.Event, error) {
 	var err error
 	var result *sql.Rows
-	if keyword != "%%" {
+	if keyword != nil {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
 join users u on e.userid = u.id	
 join categories c on e.categoryid = c.id
-where upper(e.name) like ? limit ? offset ?`, keyword, limit, (page-1)*limit)
-	} else if categoryid >= 1 {
+where upper(e.name) like %?% and e.deleted_at is null limit ? offset ?`, keyword, limit, (*page-1)*(*limit))
+	} else if categoryid != nil {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
 join users u on e.userid = u.id	
 join categories c on e.categoryid = c.id
-where e.categoryid = ? limit ? offset ?`, categoryid, limit, (page-1)*limit)
+where e.categoryid = ? and e.deleted_at is null  limit ? offset ?`, categoryid, limit, (*page-1)*(*limit))
 	} else {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
 join users u on e.userid = u.id	
 join categories c on e.categoryid = c.id
-limit ? offset ?`, limit, (page-1)*limit)
+where e.deleted_at is null  limit ? offset ?`, limit, (*page-1)*(*limit))
 	}
 	if err != nil {
+		fmt.Println("Get 1", err)
 		return nil, err
 	}
 	var events []model.Event
 	for result.Next() {
 		var event model.Event
-		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.Promotor, &event.CategoryID, &event.Datetime, &event.Location, &event.Description, &event.Photo)
+		err := result.Scan(&event.ID, &event.Name, &event.UserName, &event.Promotor, &event.CategoryName, &event.Datetime, &event.Location, &event.Description, &event.Photo)
 		if err != nil {
 			log.Fatal("error di scan getEvent")
 		}
@@ -54,7 +55,10 @@ limit ? offset ?`, limit, (page-1)*limit)
 
 func (r *EventRepository) GetbyId(id int) (model.Event, error) {
 	var event model.Event
-	stmt, err := r.db.Prepare("select id, name, userid, promotor, categoryid, date, location, description, photo from events where id = ? and deleted_at is null ")
+	stmt, err := r.db.Prepare(`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
+join users u on e.userid = u.id	
+join categories c on e.categoryid = c.id
+where e.id = ? and e.deleted_at is null`)
 	if err != nil {
 		//log.Fatal(err)
 		fmt.Println("3", err)
@@ -70,11 +74,12 @@ func (r *EventRepository) GetbyId(id int) (model.Event, error) {
 	defer result.Close()
 
 	for result.Next() {
-		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.Promotor, &event.CategoryID, &event.Datetime, &event.Location, &event.Description, &event.Photo)
+		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.UserName, &event.Promotor, &event.CategoryID, &event.CategoryName, &event.Datetime, &event.Location, &event.Description, &event.Photo)
 		if err != nil {
 			fmt.Println("2", err)
 			return event, err
 		}
+		fmt.Println(event.UserName)
 		return event, nil
 	}
 
