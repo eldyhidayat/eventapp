@@ -46,14 +46,16 @@ func (r *EventRepository) Get(category string, keyword string, page int, limit i
 
 func (r *EventRepository) GetbyId(id int) (model.Event, error) {
 	var event model.Event
-	stmt, err := r.db.Prepare("select id, name, userid, promotor, category, date, location, description, photo from events where id = ? deleted_at is null ")
+	stmt, err := r.db.Prepare("select id, name, userid, promotor, category, date, location, description, photo from events where id = ? and deleted_at is null ")
 	if err != nil {
 		//log.Fatal(err)
+		fmt.Println("3", err)
 		return event, fmt.Errorf("gagal prepare db")
 	}
 
 	result, err := stmt.Query(id)
 	if err != nil {
+		fmt.Println("1", err)
 		return event, fmt.Errorf("gagal query event")
 	}
 
@@ -62,6 +64,7 @@ func (r *EventRepository) GetbyId(id int) (model.Event, error) {
 	for result.Next() {
 		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.Promotor, &event.Category, &event.Datetime, &event.Location, &event.Description, &event.Photo)
 		if err != nil {
+			fmt.Println("2", err)
 			return event, err
 		}
 		return event, nil
@@ -92,12 +95,14 @@ func (r *EventRepository) Create(event model.Event) (model.Event, error) {
 func (r *EventRepository) Update(id int, event model.Event) (model.Event, error) {
 	stmt, err := r.db.Prepare("UPDATE events SET name= ?, promotor= ?, category= ?, date= ?, location= ?, description= ?, photo= ? WHERE id = ?")
 	if err != nil {
+		fmt.Println("1", err)
 		// log.Fatal(err)
 		return event, fmt.Errorf("gagal prepare update")
 	}
 
 	result, error := stmt.Exec(event.Name, event.Promotor, event.Category, event.Datetime, event.Location, event.Description, event.Photo, id)
 	if error != nil {
+		fmt.Println("2", error)
 		return event, fmt.Errorf("gagal exec update")
 	}
 
