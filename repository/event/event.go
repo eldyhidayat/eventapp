@@ -15,7 +15,7 @@ func New(db *sql.DB) *EventRepository {
 	return &EventRepository{db: db}
 }
 
-func (r *EventRepository) Get(categoryid *int, keyword *string, offset *int, limit *int) ([]model.Event, error) {
+func (r *EventRepository) Get(userid *int, categoryid *int, keyword *string, offset *int, limit *int) ([]model.Event, error) {
 	var err error
 	var result *sql.Rows
 	if keyword != nil && limit != nil && offset != nil {
@@ -25,7 +25,13 @@ func (r *EventRepository) Get(categoryid *int, keyword *string, offset *int, lim
 			join categories c on e.categoryid = c.id
 			where upper(e.name) LIKE '%v' and e.deleted_at is null LIMIT %v OFFSET %v`, kw, *limit, *offset)
 		result, err = r.db.Query(query)
-	} else if categoryid != nil && limit != nil && offset != nil {
+	} else if userid != nil && limit != nil && offset != nil {
+		result, err = r.db.Query(
+			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			join users u on e.userid = u.id	
+			join categories c on e.categoryid = c.id
+			where u.id = ? and e.deleted_at is null limit ? offset ?`, *userid, *limit, *offset)
+	}else if categoryid != nil && limit != nil && offset != nil {
 		result, err = r.db.Query(
 			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
