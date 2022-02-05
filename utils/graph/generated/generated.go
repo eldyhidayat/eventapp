@@ -94,7 +94,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AuthLogin    func(childComplexity int, email string, password string) int
-		Events       func(childComplexity int, categoryid *int, keyword *string, offset *int, limit *int) int
+		Events       func(childComplexity int, userid *int, categoryid *int, keyword *string, offset *int, limit *int) int
 		EventsByID   func(childComplexity int, id int) int
 		Participants func(childComplexity int, eventid int) int
 		ReadComment  func(childComplexity int, eventid int) int
@@ -126,7 +126,7 @@ type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
 	UsersByID(ctx context.Context, id int) (*model.User, error)
 	AuthLogin(ctx context.Context, email string, password string) (*model.LoginResponse, error)
-	Events(ctx context.Context, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error)
+	Events(ctx context.Context, userid *int, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error)
 	EventsByID(ctx context.Context, id int) (*model.Event, error)
 	Participants(ctx context.Context, eventid int) ([]*model.User, error)
 	ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error)
@@ -426,7 +426,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Events(childComplexity, args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int)), true
+		return e.complexity.Query.Events(childComplexity, args["userid"].(*int), args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int)), true
 
 	case "Query.eventsByID":
 		if e.complexity.Query.EventsByID == nil {
@@ -680,7 +680,7 @@ type Query {
 	users: [User!]
 	usersByID(id: Int!): User
 	authLogin(email: String!, password: String!): LoginResponse!
-	events(categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
+	events(userid: Int, categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 	participants(eventid:Int!): [User!]
 	readComment(eventid: Int!): [Comment!]
@@ -914,41 +914,50 @@ func (ec *executionContext) field_Query_events_args(ctx context.Context, rawArgs
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *int
-	if tmp, ok := rawArgs["categoryid"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryid"))
+	if tmp, ok := rawArgs["userid"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userid"))
 		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["categoryid"] = arg0
-	var arg1 *string
+	args["userid"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["categoryid"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryid"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["categoryid"] = arg1
+	var arg2 *string
 	if tmp, ok := rawArgs["keyword"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["keyword"] = arg1
-	var arg2 *int
+	args["keyword"] = arg2
+	var arg3 *int
 	if tmp, ok := rawArgs["offset"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
-		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["offset"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["limit"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["limit"] = arg3
+	args["offset"] = arg3
+	var arg4 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg4, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg4
 	return args, nil
 }
 
@@ -2314,7 +2323,7 @@ func (ec *executionContext) _Query_events(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Events(rctx, args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int))
+		return ec.resolvers.Query().Events(rctx, args["userid"].(*int), args["categoryid"].(*int), args["keyword"].(*string), args["offset"].(*int), args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
