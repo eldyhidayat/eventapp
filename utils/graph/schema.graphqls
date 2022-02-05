@@ -61,8 +61,21 @@ input UpdateUser {
 	avatar: String
 }
 
+type Participation {
+	id: Int!
+	userId: Int!
+	eventId: Int!
+}
+
 type Message {
 	message: String!
+}
+
+type Comment {
+	id: Int!
+	userId: Int!
+	eventId: Int!
+	comment: String! 
 }
 
 type LoginResponse {
@@ -78,6 +91,8 @@ type Query {
 	authLogin(email: String!, password: String!): LoginResponse!
 	events(categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
+	participants(eventid:Int!): [User!]
+	readComment(eventid: Int!): [Comment!]
 }
 
 type Mutation {
@@ -87,6 +102,8 @@ type Mutation {
 	createEvent(input: NewEvent!): Event!
 	updateEvent(id: Int!, set: UpdateEvent!): Event!
 	deleteEvent(id: Int!): Message!
+	joinEvent(eventid: Int!): Participation!
+	createComment(eventid: Int!, comment: String!): Comment!
 }
 
 # buat di controller update biar rapih (pake entities.user)

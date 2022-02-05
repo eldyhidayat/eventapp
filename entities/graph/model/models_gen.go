@@ -2,6 +2,13 @@
 
 package model
 
+type Comment struct {
+	ID      int    `json:"id"`
+	UserID  int    `json:"userId"`
+	EventID int    `json:"eventId"`
+	Comment string `json:"comment"`
+}
+
 type Event struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
@@ -44,6 +51,12 @@ type NewUser struct {
 	Password    string  `json:"password"`
 	PhoneNumber *string `json:"phoneNumber"`
 	Avatar      *string `json:"avatar"`
+}
+
+type Participation struct {
+	ID      int `json:"id"`
+	UserID  int `json:"userId"`
+	EventID int `json:"eventId"`
 }
 
 type UpdateEvent struct {

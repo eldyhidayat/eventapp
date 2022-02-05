@@ -231,6 +231,14 @@ func (r *mutationResolver) DeleteEvent(ctx context.Context, id int) (*model.Mess
 	return &responseMessage, nil
 }
 
+func (r *mutationResolver) JoinEvent(ctx context.Context, eventid int) (*model.Participation, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) CreateComment(ctx context.Context, eventid int, comment string) (*model.Comment, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	responseData, err := r.userRepo.Get()
 
@@ -319,6 +327,14 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, e
 	responseEventData.Description = responseData.Description
 	responseEventData.Photo = responseData.Photo
 	return &responseEventData, nil
+}
+
+func (r *queryResolver) Participants(ctx context.Context, eventid int) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.
