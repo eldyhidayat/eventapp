@@ -13,10 +13,10 @@ import (
 func RegisterPath(e *echo.Echo, srv *handler.Server) {
 	e.Use(middleware.Recover())
 	{
-		e.Use(middleware.CORSWithConfig((middleware.CORSConfig{})))
-		
+		e.Use(middleware.CORS())
+
 		e.POST("/graphql", func(c echo.Context) error {
-			ctx := context.WithValue(c.Request().Context(),"EchoContextKey", c.Get("INFO"))
+			ctx := context.WithValue(c.Request().Context(), "EchoContextKey", c.Get("INFO"))
 			c.SetRequest(c.Request().WithContext(ctx))
 			srv.ServeHTTP(c.Response(), c.Request())
 			return nil
