@@ -232,7 +232,29 @@ func (r *mutationResolver) DeleteEvent(ctx context.Context, id int) (*model.Mess
 }
 
 func (r *mutationResolver) JoinEvent(ctx context.Context, eventid int) (*model.Participation, error) {
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
+		fmt.Println("id user", convData.Id)
+	}
+	userId := convData.Id
+	participationData := model.Participation{
+		UserID:  userId,
+		EventID: eventid,
+	}
+	res, err := r.participationRepo.Create(participationData)
+	if err != nil {
+		return nil, errors.New("failed Create Event")
+	}
+	responseMessage := model.Participation{
+		ID:      res.ID,
+		UserID:  res.UserID,
+		EventID: res.EventID,
+	}
+	return &responseMessage, nil
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, eventid int, comment string) (*model.Comment, error) {
@@ -330,7 +352,20 @@ func (r *queryResolver) EventsByID(ctx context.Context, id int) (*model.Event, e
 }
 
 func (r *queryResolver) Participants(ctx context.Context, eventid int) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	responseData, err := r.participationRepo.Get(eventid)
+
+	if err != nil {
+		return nil, errors.New("participants not found")
+	}
+
+	userResponseData := []*model.User{}
+
+	for _, user := range responseData {
+		convertID := int(*user.ID)
+		userResponseData = append(userResponseData, &model.User{ID: &convertID, Name: user.Name, Email: user.Email, Password: user.Password, PhoneNumber: user.PhoneNumber, Avatar: user.Avatar})
+	}
+
+	return userResponseData, nil
 }
 
 func (r *queryResolver) ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error) {
