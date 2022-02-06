@@ -20,7 +20,7 @@ func (r *EventRepository) Get(userid *int, categoryid *int, keyword *string, off
 	var result *sql.Rows
 	if keyword != nil && limit != nil && offset != nil {
 		kw := "%" + *keyword + "%"
-		query := fmt.Sprintf(`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+		query := fmt.Sprintf(`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where upper(e.name) LIKE '%v' and e.deleted_at is null LIMIT %v OFFSET %v`, kw, *limit, *offset)
@@ -65,6 +65,7 @@ func (r *EventRepository) Get(userid *int, categoryid *int, keyword *string, off
 		var event model.Event
 		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.UserName, &event.Promotor, &event.CategoryID, &event.CategoryName, &event.Datetime, &event.Location, &event.Description, &event.Photo)
 		if err != nil {
+			fmt.Println(err)
 			log.Fatal("error di scan getEvent")
 		}
 		events = append(events, event)
