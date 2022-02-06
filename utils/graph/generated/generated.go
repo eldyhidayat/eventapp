@@ -43,6 +43,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Categories struct {
+		Category func(childComplexity int) int
+		ID       func(childComplexity int) int
+	}
+
 	Comment struct {
 		Comment func(childComplexity int) int
 		EventID func(childComplexity int) int
@@ -94,6 +99,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AuthLogin    func(childComplexity int, email string, password string) int
+		Categories   func(childComplexity int) int
 		Events       func(childComplexity int, userid *int, categoryid *int, keyword *string, offset *int, limit *int) int
 		EventsByID   func(childComplexity int, id int) int
 		Participants func(childComplexity int, eventid int) int
@@ -130,6 +136,7 @@ type QueryResolver interface {
 	EventsByID(ctx context.Context, id int) (*model.Event, error)
 	Participants(ctx context.Context, eventid int) ([]*model.User, error)
 	ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error)
+	Categories(ctx context.Context) ([]*model.Categories, error)
 }
 
 type executableSchema struct {
@@ -146,6 +153,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Categories.category":
+		if e.complexity.Categories.Category == nil {
+			break
+		}
+
+		return e.complexity.Categories.Category(childComplexity), true
+
+	case "Categories.id":
+		if e.complexity.Categories.ID == nil {
+			break
+		}
+
+		return e.complexity.Categories.ID(childComplexity), true
 
 	case "Comment.comment":
 		if e.complexity.Comment.Comment == nil {
@@ -416,6 +437,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.AuthLogin(childComplexity, args["email"].(string), args["password"].(string)), true
 
+	case "Query.categories":
+		if e.complexity.Query.Categories == nil {
+			break
+		}
+
+		return e.complexity.Query.Categories(childComplexity), true
+
 	case "Query.events":
 		if e.complexity.Query.Events == nil {
 			break
@@ -676,6 +704,11 @@ type LoginResponse {
 	token: String!
 }
 
+type Categories {
+	id: Int!
+	category: String!
+}
+
 type Query {
 	users: [User!]
 	usersByID(id: Int!): User
@@ -684,12 +717,13 @@ type Query {
 	eventsByID(id: Int!): Event
 	participants(eventid:Int!): [User!]
 	readComment(eventid: Int!): [Comment!]
+	categories:[Categories!]
 }
 
 type Mutation {
 	createUser(input: NewUser!): User!
 	updateUser(id: Int!, set: UpdateUser!): User!
-	deleteUser(id: Int!): Message!
+	deleteUser(	id: Int!): Message!
 	createEvent(input: NewEvent!): Event!
 	updateEvent(id: Int!, set: UpdateEvent!): Event!
 	deleteEvent(id: Int!): Message!
@@ -1043,6 +1077,76 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Categories_id(ctx context.Context, field graphql.CollectedField, obj *model.Categories) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Categories",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Categories_category(ctx context.Context, field graphql.CollectedField, obj *model.Categories) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Categories",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Category, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Comment_id(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
 	defer func() {
@@ -2452,6 +2556,38 @@ func (ec *executionContext) _Query_readComment(ctx context.Context, field graphq
 	res := resTmp.([]*model.Comment)
 	fc.Result = res
 	return ec.marshalOComment2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Categories(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Categories)
+	fc.Result = res
+	return ec.marshalOCategories2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCategoriesᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4116,6 +4252,47 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 
 // region    **************************** object.gotpl ****************************
 
+var categoriesImplementors = []string{"Categories"}
+
+func (ec *executionContext) _Categories(ctx context.Context, sel ast.SelectionSet, obj *model.Categories) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, categoriesImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Categories")
+		case "id":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Categories_id(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "category":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Categories_category(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commentImplementors = []string{"Comment"}
 
 func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, obj *model.Comment) graphql.Marshaler {
@@ -4723,6 +4900,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "categories":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_categories(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "__type":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -5244,6 +5441,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNCategories2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCategories(ctx context.Context, sel ast.SelectionSet, v *model.Categories) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Categories(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNComment2eventappᚋentitiesᚋgraphᚋmodelᚐComment(ctx context.Context, sel ast.SelectionSet, v model.Comment) graphql.Marshaler {
 	return ec._Comment(ctx, sel, &v)
 }
@@ -5655,6 +5862,53 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCategories2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCategoriesᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Categories) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCategories2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCategories(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOComment2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Comment) graphql.Marshaler {

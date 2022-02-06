@@ -2,6 +2,11 @@
 
 package model
 
+type Categories struct {
+	ID       int    `json:"id"`
+	Category string `json:"category"`
+}
+
 type Comment struct {
 	ID      int    `json:"id"`
 	UserID  int    `json:"userId"`

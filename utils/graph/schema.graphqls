@@ -85,6 +85,11 @@ type LoginResponse {
 	token: String!
 }
 
+type Categories {
+	id: Int!
+	category: String!
+}
+
 type Query {
 	users: [User!]
 	usersByID(id: Int!): User
@@ -93,6 +98,7 @@ type Query {
 	eventsByID(id: Int!): Event
 	participants(eventid:Int!): [User!]
 	readComment(eventid: Int!): [Comment!]
+	categories:[Categories!]
 }
 
 type Mutation {

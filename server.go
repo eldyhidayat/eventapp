@@ -3,6 +3,7 @@ package main
 import (
 	_config "eventapp/config"
 	_graph "eventapp/delivery/controllers/graph"
+	_categoryRepo "eventapp/repository/category"
 	_commentRepo "eventapp/repository/comment"
 	_eventRepo "eventapp/repository/event"
 
@@ -32,10 +33,11 @@ func main() {
 	eventRepo := _eventRepo.New(db)
 	participationRepo := _participationRepo.New(db)
 	commentRepo := _commentRepo.New(db)
+	categoryRepo := _categoryRepo.New(db)
 
 	//create echo http
 	e := echo.New()
-	client := _graph.NewResolver(authRepo, userRepo, eventRepo, participationRepo, commentRepo)
+	client := _graph.NewResolver(authRepo, userRepo, eventRepo, participationRepo, commentRepo, categoryRepo)
 	srv := _router.NewGraphQLServer(client)
 	//register API path and controller
 	_router.RegisterPath(e, srv)

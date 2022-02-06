@@ -409,6 +409,22 @@ func (r *queryResolver) ReadComment(ctx context.Context, eventid int) ([]*model.
 	return commentResponseData, nil
 }
 
+func (r *queryResolver) Categories(ctx context.Context) ([]*model.Categories, error) {
+	responseData, err := r.categoryRepo.Get()
+
+	if err != nil {
+		return nil, errors.New("comments not found")
+	}
+
+	categoriesResponseData := []*model.Categories{}
+
+	for _, category := range responseData {
+		categoriesResponseData = append(categoriesResponseData, &model.Categories{ID: category.ID, Category: category.Category})
+	}
+
+	return categoriesResponseData, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
