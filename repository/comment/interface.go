@@ -5,6 +5,6 @@ import (
 )
 
 type Comment interface {
-	Get(eventId int) ([]model.Comment, error)
+	Get(eventId int) ([]model.CommentResponse, error)
 	Create(model.Comment) (model.Comment, error)
 }

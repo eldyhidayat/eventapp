@@ -15,14 +15,14 @@ func New(db *sql.DB) *CommentRepository {
 	return &CommentRepository{db: db}
 }
 
-func (r *CommentRepository) Get(eventId int) ([]model.Comment, error) {
-	stmt, err := r.db.Prepare(`select c.id, c.userid, c.eventid, c.comment from comments c 
-	where c.deleted_at is null and c.eventid =?`)
+func (r *CommentRepository) Get(eventId int) ([]model.CommentResponse, error) {
+	stmt, err := r.db.Prepare(`select c.id, c.userid, u.name, u.avatar, c.eventid, c.comment from comments c 
+	join users u on c.userid = u.id where c.deleted_at is null and c.eventid =?`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var comments []model.Comment
+	var comments []model.CommentResponse
 
 	result, err := stmt.Query(eventId)
 	if err != nil {
@@ -32,9 +32,10 @@ func (r *CommentRepository) Get(eventId int) ([]model.Comment, error) {
 	defer result.Close()
 
 	for result.Next() {
-		var comment model.Comment
-		err := result.Scan(&comment.ID, &comment.UserID, &comment.EventID, &comment.Comment)
+		var comment model.CommentResponse
+		err := result.Scan(&comment.ID, &comment.UserID, &comment.Name, &comment.Avatar, &comment.EventID, &comment.Comment)
 		if err != nil {
+			fmt.Println(err)
 			log.Fatal("error di scan get comments")
 		}
 		comments = append(comments, comment)

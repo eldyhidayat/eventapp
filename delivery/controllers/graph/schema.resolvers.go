@@ -393,17 +393,17 @@ func (r *queryResolver) Participants(ctx context.Context, eventid int) ([]*model
 	return userResponseData, nil
 }
 
-func (r *queryResolver) ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error) {
+func (r *queryResolver) ReadComment(ctx context.Context, eventid int) ([]*model.CommentResponse, error) {
 	responseData, err := r.commentRepo.Get(eventid)
 
 	if err != nil {
 		return nil, errors.New("comments not found")
 	}
 
-	commentResponseData := []*model.Comment{}
+	commentResponseData := []*model.CommentResponse{}
 
 	for _, comment := range responseData {
-		commentResponseData = append(commentResponseData, &model.Comment{ID: comment.ID, UserID: comment.UserID, EventID: comment.EventID, Comment: comment.Comment})
+		commentResponseData = append(commentResponseData, &model.CommentResponse{ID: comment.ID, UserID: comment.UserID, Name: comment.Name, Avatar: comment.Avatar, EventID: comment.EventID, Comment: comment.Comment})
 	}
 
 	return commentResponseData, nil

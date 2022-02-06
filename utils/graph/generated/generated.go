@@ -55,6 +55,15 @@ type ComplexityRoot struct {
 		UserID  func(childComplexity int) int
 	}
 
+	CommentResponse struct {
+		Avatar  func(childComplexity int) int
+		Comment func(childComplexity int) int
+		EventID func(childComplexity int) int
+		ID      func(childComplexity int) int
+		Name    func(childComplexity int) int
+		UserID  func(childComplexity int) int
+	}
+
 	Event struct {
 		CategoryID   func(childComplexity int) int
 		CategoryName func(childComplexity int) int
@@ -135,7 +144,7 @@ type QueryResolver interface {
 	Events(ctx context.Context, userid *int, categoryid *int, keyword *string, offset *int, limit *int) ([]*model.Event, error)
 	EventsByID(ctx context.Context, id int) (*model.Event, error)
 	Participants(ctx context.Context, eventid int) ([]*model.User, error)
-	ReadComment(ctx context.Context, eventid int) ([]*model.Comment, error)
+	ReadComment(ctx context.Context, eventid int) ([]*model.CommentResponse, error)
 	Categories(ctx context.Context) ([]*model.Categories, error)
 }
 
@@ -195,6 +204,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Comment.UserID(childComplexity), true
+
+	case "CommentResponse.avatar":
+		if e.complexity.CommentResponse.Avatar == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.Avatar(childComplexity), true
+
+	case "CommentResponse.comment":
+		if e.complexity.CommentResponse.Comment == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.Comment(childComplexity), true
+
+	case "CommentResponse.eventId":
+		if e.complexity.CommentResponse.EventID == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.EventID(childComplexity), true
+
+	case "CommentResponse.id":
+		if e.complexity.CommentResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.ID(childComplexity), true
+
+	case "CommentResponse.name":
+		if e.complexity.CommentResponse.Name == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.Name(childComplexity), true
+
+	case "CommentResponse.userId":
+		if e.complexity.CommentResponse.UserID == nil {
+			break
+		}
+
+		return e.complexity.CommentResponse.UserID(childComplexity), true
 
 	case "Event.categoryId":
 		if e.complexity.Event.CategoryID == nil {
@@ -690,6 +741,15 @@ type Message {
 	message: String!
 }
 
+type CommentResponse {
+	id: Int!
+	userId: Int!
+	name: String!
+	avatar: String
+	eventId: Int!
+	comment: String! 
+}
+
 type Comment {
 	id: Int!
 	userId: Int!
@@ -716,7 +776,7 @@ type Query {
 	events(userid: Int, categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 	participants(eventid:Int!): [User!]
-	readComment(eventid: Int!): [Comment!]
+	readComment(eventid: Int!): [CommentResponse!]
 	categories:[Categories!]
 }
 
@@ -1262,6 +1322,213 @@ func (ec *executionContext) _Comment_comment(ctx context.Context, field graphql.
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "Comment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Comment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_userId(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_name(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_avatar(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_eventId(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CommentResponse_comment(ctx context.Context, field graphql.CollectedField, obj *model.CommentResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CommentResponse",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2553,9 +2820,9 @@ func (ec *executionContext) _Query_readComment(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Comment)
+	res := resTmp.([]*model.CommentResponse)
 	fc.Result = res
-	return ec.marshalOComment2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentᚄ(ctx, field.Selections, res)
+	return ec.marshalOCommentResponse2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4354,6 +4621,84 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var commentResponseImplementors = []string{"CommentResponse"}
+
+func (ec *executionContext) _CommentResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CommentResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commentResponseImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CommentResponse")
+		case "id":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_id(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userId":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_userId(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_name(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "avatar":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_avatar(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+		case "eventId":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_eventId(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "comment":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._CommentResponse_comment(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var eventImplementors = []string{"Event"}
 
 func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, obj *model.Event) graphql.Marshaler {
@@ -5465,6 +5810,16 @@ func (ec *executionContext) marshalNComment2ᚖeventappᚋentitiesᚋgraphᚋmod
 	return ec._Comment(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCommentResponse2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponse(ctx context.Context, sel ast.SelectionSet, v *model.CommentResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._CommentResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNEvent2eventappᚋentitiesᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v model.Event) graphql.Marshaler {
 	return ec._Event(ctx, sel, &v)
 }
@@ -5911,7 +6266,7 @@ func (ec *executionContext) marshalOCategories2ᚕᚖeventappᚋentitiesᚋgraph
 	return ret
 }
 
-func (ec *executionContext) marshalOComment2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Comment) graphql.Marshaler {
+func (ec *executionContext) marshalOCommentResponse2ᚕᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CommentResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5938,7 +6293,7 @@ func (ec *executionContext) marshalOComment2ᚕᚖeventappᚋentitiesᚋgraphᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNComment2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐComment(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommentResponse2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

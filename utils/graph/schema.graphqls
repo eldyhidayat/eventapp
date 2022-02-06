@@ -71,6 +71,15 @@ type Message {
 	message: String!
 }
 
+type CommentResponse {
+	id: Int!
+	userId: Int!
+	name: String!
+	avatar: String
+	eventId: Int!
+	comment: String! 
+}
+
 type Comment {
 	id: Int!
 	userId: Int!
@@ -97,7 +106,7 @@ type Query {
 	events(userid: Int, categoryid: Int, keyword: String, offset: Int, limit: Int): [Event!]
 	eventsByID(id: Int!): Event
 	participants(eventid:Int!): [User!]
-	readComment(eventid: Int!): [Comment!]
+	readComment(eventid: Int!): [CommentResponse!]
 	categories:[Categories!]
 }
 

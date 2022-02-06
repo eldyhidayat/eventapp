@@ -14,6 +14,15 @@ type Comment struct {
 	Comment string `json:"comment"`
 }
 
+type CommentResponse struct {
+	ID      int     `json:"id"`
+	UserID  int     `json:"userId"`
+	Name    string  `json:"name"`
+	Avatar  *string `json:"avatar"`
+	EventID int     `json:"eventId"`
+	Comment string  `json:"comment"`
+}
+
 type Event struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
