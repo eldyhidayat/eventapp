@@ -111,11 +111,13 @@ func (r *UserRepository) Update(id int, user model.User) (model.User, error) {
 func (r *UserRepository) Delete(id int) error {
 	stmt, err := r.db.Prepare("UPDATE users SET deleted_at = current_timestamp where id = ?")
 	if err != nil {
+		fmt.Println("1", err)
 		log.Fatal(err)
 	}
 
 	result, err := stmt.Exec(id)
 	if err != nil {
+		fmt.Println("2", err)
 		return err
 	}
 

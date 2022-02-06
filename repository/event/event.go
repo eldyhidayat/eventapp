@@ -20,38 +20,38 @@ func (r *EventRepository) Get(userid *int, categoryid *int, keyword *string, off
 	var result *sql.Rows
 	if keyword != nil && limit != nil && offset != nil {
 		kw := "%" + *keyword + "%"
-		query := fmt.Sprintf(`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+		query := fmt.Sprintf(`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where upper(e.name) LIKE '%v' and e.deleted_at is null LIMIT %v OFFSET %v`, kw, *limit, *offset)
 		result, err = r.db.Query(query)
 	} else if userid != nil && limit != nil && offset != nil {
 		result, err = r.db.Query(
-			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where u.id = ? and e.deleted_at is null limit ? offset ?`, *userid, *limit, *offset)
-	}else if categoryid != nil && limit != nil && offset != nil {
+	} else if categoryid != nil && limit != nil && offset != nil {
 		result, err = r.db.Query(
-			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where e.categoryid = ? and e.deleted_at is null limit ? offset ?`, *categoryid, *limit, *offset)
 	} else if categoryid != nil {
 		result, err = r.db.Query(
-			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where e.categoryid = ? and e.deleted_at is null`, *categoryid)
 	} else if limit != nil && offset != nil {
 		result, err = r.db.Query(
-			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where e.deleted_at is null  limit ? offset ?`, limit, offset)
 	} else {
 		result, err = r.db.Query(
-			`select e.id, e.name, u.name, e.promotor, c.category, e.date, e.location, e.description, e.photo from events e 
+			`select e.id, e.name, u.id, u.name, e.promotor, c.id, c.category, e.date, e.location, e.description, e.photo from events e 
 			join users u on e.userid = u.id	
 			join categories c on e.categoryid = c.id
 			where e.deleted_at is null`)
@@ -63,8 +63,9 @@ func (r *EventRepository) Get(userid *int, categoryid *int, keyword *string, off
 	var events []model.Event
 	for result.Next() {
 		var event model.Event
-		err := result.Scan(&event.ID, &event.Name, &event.UserName, &event.Promotor, &event.CategoryName, &event.Datetime, &event.Location, &event.Description, &event.Photo)
+		err := result.Scan(&event.ID, &event.Name, &event.UserID, &event.UserName, &event.Promotor, &event.CategoryID, &event.CategoryName, &event.Datetime, &event.Location, &event.Description, &event.Photo)
 		if err != nil {
+			fmt.Println(err)
 			log.Fatal("error di scan getEvent")
 		}
 		events = append(events, event)
