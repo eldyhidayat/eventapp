@@ -97,13 +97,14 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, set model.Upd
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Message, error) {
 	dataLogin := ctx.Value("EchoContextKey") // auth jwt
+	var convData *middlewares.User
 	if dataLogin == nil {
 		return nil, errors.New("unauthorized")
 	} else {
-		convData := ctx.Value("EchoContextKey").(*middlewares.User)
+		convData = ctx.Value("EchoContextKey").(*middlewares.User)
 		fmt.Println("id user", convData.Id)
 	}
-	if id != dataLogin.(int) {
+	if id != convData.Id {
 		return nil, errors.New("unauthorized")
 	}
 
@@ -325,7 +326,7 @@ func (r *queryResolver) Events(ctx context.Context, userid *int, categoryid *int
 
 	for _, event := range responseData {
 		//convertID := int(*event.ID)
-		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserName: event.UserName, Promotor: event.Promotor, CategoryName: event.CategoryName, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
+		eventResponseData = append(eventResponseData, &model.Event{ID: event.ID, Name: event.Name, UserID: event.UserID, UserName: event.UserName, Promotor: event.Promotor, CategoryID: event.CategoryID, CategoryName: event.CategoryName, Datetime: event.Datetime, Location: event.Location, Description: event.Description, Photo: event.Photo})
 	}
 
 	return eventResponseData, nil
