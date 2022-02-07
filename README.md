@@ -4,7 +4,7 @@ About Lazy Events is an Event Planning App created for the purpose of study.
 
 ## Demo
 
-Access our site at 54.179.3.68:8080
+Access our site at [Event App](http://54.179.3.68:8080)
 
 ## Features
 
