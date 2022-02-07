@@ -43,7 +43,8 @@ func (r *CommentRepository) Get(eventId int) ([]model.CommentResponse, error) {
 	return comments, nil
 }
 
-func (r *CommentRepository) Create(comment model.Comment) (model.Comment, error) {
+func (r *CommentRepository) Create(comment model.Comment) (model.CommentResponse, error) {
+	var comm model.CommentResponse
 	stmt, err := r.db.Prepare("INSERT INTO comments(userid, eventid, comment) VALUES(?,?,?)")
 	if err != nil {
 		log.Fatal(err)
@@ -51,13 +52,35 @@ func (r *CommentRepository) Create(comment model.Comment) (model.Comment, error)
 
 	result, err := stmt.Exec(comment.UserID, comment.EventID, comment.Comment)
 	if err != nil {
-		return comment, fmt.Errorf("gagal exec")
+		return comm, fmt.Errorf("gagal exec")
 	}
+	commentId, _ := result.LastInsertId()
 
 	notAffected, _ := result.RowsAffected()
 	if notAffected == 0 {
-		return comment, fmt.Errorf("comment not created")
+		return comm, fmt.Errorf("comment not created")
 	}
 
-	return comment, nil
+	stmt, err = r.db.Prepare(`select c.id, c.userid, u.name, u.avatar, c.eventid, c.comment from comments c 
+	join users u on c.userid = u.id where c.deleted_at is null and c.id =?`)
+	if err != nil {
+		//log.Fatal(err)
+		return comm, fmt.Errorf("gagal prepare db")
+	}
+
+	res, err := stmt.Query(commentId)
+	if err != nil {
+		return comm, fmt.Errorf("gagal query comment")
+	}
+
+	for res.Next() {
+		err := res.Scan(&comm.ID, &comm.UserID, &comm.Name, &comm.Avatar, &comm.EventID, &comm.Comment)
+		if err != nil {
+			return comm, err
+		}
+		return comm, nil
+	}
+
+	return comm, fmt.Errorf("comment not found")
+
 }

@@ -6,5 +6,5 @@ import (
 
 type Comment interface {
 	Get(eventId int) ([]model.CommentResponse, error)
-	Create(model.Comment) (model.Comment, error)
+	Create(model.Comment) (model.CommentResponse, error)
 }

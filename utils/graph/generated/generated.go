@@ -135,7 +135,7 @@ type MutationResolver interface {
 	UpdateEvent(ctx context.Context, id int, set model.UpdateEvent) (*model.Event, error)
 	DeleteEvent(ctx context.Context, id int) (*model.Message, error)
 	JoinEvent(ctx context.Context, eventid int) (*model.Participation, error)
-	CreateComment(ctx context.Context, eventid int, comment string) (*model.Comment, error)
+	CreateComment(ctx context.Context, eventid int, comment string) (*model.CommentResponse, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
@@ -788,7 +788,7 @@ type Mutation {
 	updateEvent(id: Int!, set: UpdateEvent!): Event!
 	deleteEvent(id: Int!): Message!
 	joinEvent(eventid: Int!): Participation!
-	createComment(eventid: Int!, comment: String!): Comment!
+	createComment(eventid: Int!, comment: String!): CommentResponse!
 }
 
 # buat di controller update biar rapih (pake entities.user)
@@ -2446,9 +2446,9 @@ func (ec *executionContext) _Mutation_createComment(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Comment)
+	res := resTmp.(*model.CommentResponse)
 	fc.Result = res
-	return ec.marshalNComment2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐComment(ctx, field.Selections, res)
+	return ec.marshalNCommentResponse2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Participation_id(ctx context.Context, field graphql.CollectedField, obj *model.Participation) (ret graphql.Marshaler) {
@@ -5796,18 +5796,8 @@ func (ec *executionContext) marshalNCategories2ᚖeventappᚋentitiesᚋgraphᚋ
 	return ec._Categories(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNComment2eventappᚋentitiesᚋgraphᚋmodelᚐComment(ctx context.Context, sel ast.SelectionSet, v model.Comment) graphql.Marshaler {
-	return ec._Comment(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNComment2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐComment(ctx context.Context, sel ast.SelectionSet, v *model.Comment) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Comment(ctx, sel, v)
+func (ec *executionContext) marshalNCommentResponse2eventappᚋentitiesᚋgraphᚋmodelᚐCommentResponse(ctx context.Context, sel ast.SelectionSet, v model.CommentResponse) graphql.Marshaler {
+	return ec._CommentResponse(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommentResponse2ᚖeventappᚋentitiesᚋgraphᚋmodelᚐCommentResponse(ctx context.Context, sel ast.SelectionSet, v *model.CommentResponse) graphql.Marshaler {

@@ -258,7 +258,7 @@ func (r *mutationResolver) JoinEvent(ctx context.Context, eventid int) (*model.P
 	return &responseMessage, nil
 }
 
-func (r *mutationResolver) CreateComment(ctx context.Context, eventid int, comment string) (*model.Comment, error) {
+func (r *mutationResolver) CreateComment(ctx context.Context, eventid int, comment string) (*model.CommentResponse, error) {
 	dataLogin := ctx.Value("EchoContextKey") // auth jwt
 	var convData *middlewares.User
 	if dataLogin == nil {
@@ -277,9 +277,11 @@ func (r *mutationResolver) CreateComment(ctx context.Context, eventid int, comme
 	if err != nil {
 		return nil, errors.New("failed Create Comment")
 	}
-	responseMessage := model.Comment{
+	responseMessage := model.CommentResponse{
 		ID:      res.ID,
 		UserID:  res.UserID,
+		Name:    res.Name,
+		Avatar:  res.Avatar,
 		EventID: res.EventID,
 		Comment: res.Comment,
 	}

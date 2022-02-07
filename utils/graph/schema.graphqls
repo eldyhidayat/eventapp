@@ -118,7 +118,7 @@ type Mutation {
 	updateEvent(id: Int!, set: UpdateEvent!): Event!
 	deleteEvent(id: Int!): Message!
 	joinEvent(eventid: Int!): Participation!
-	createComment(eventid: Int!, comment: String!): Comment!
+	createComment(eventid: Int!, comment: String!): CommentResponse!
 }
 
 # buat di controller update biar rapih (pake entities.user)
